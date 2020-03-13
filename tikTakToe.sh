@@ -41,3 +41,4 @@ then
 	echo "system can play first"
 fi;
 }
+displayBoard
