@@ -102,17 +102,43 @@ function userPlay()
 	fi;
 }
 
+function suggestPossibleHorizontalMoves()
+{
+local possibleMoves=""
+	for (( i=0; i<${#array[@]}; i+=3 ))
+	do
+		if [[ ${array[$i]} == ${array[$i+1]} && ${array[$i]} == "$systemLetter" ]]
+		then
+			possibleMoves=${array[$i+2]}
+		elif [[ ${array[$i]} == ${array[$i+2]} && ${array[$i]} == "$systemLetter" ]]
+		then
+			possibleMoves=${array[$i+1]}
+		elif [[ ${array[$i+1]} == ${array[$i+2]} &&  ${array[$i+1]} == "$systemLetter" ]]
+		then
+			possibleMoves=${array[$i]}
+		fi;
+	done
+		echo $possibleMoves
+}
+
 function systemPlay()
 {
-	numberPosition=$(( RANDOM % 9 ))
-	checkPositionIsEmpty="$( checkIsEmpty $numberPosition )"
-	if [[ $checkPositionIsEmpty == "true" ]]
+	possibleMove="$( suggestPossibleHorizontalMoves )"
+	if [[ $possibleMove != "" ]]
 	then
-		array[$numberPosition]="$systemLetter"
+		array[$possibleMove]="$systemLetter"
 		displayBoard
 	else
-		((count--))
-		echo "position is already filled,U can play"
+		numberPosition=$(( RANDOM % 9 ))
+		checkPositionIsEmpty="$( checkIsEmpty $numberPosition )"
+		if [[ $checkPositionIsEmpty == "true" ]]
+		then
+			array[$numberPosition]="$systemLetter"
+			displayBoard
+		else
+			((count--))
+			echo "position is already filled,U can play"
+		fi;
 	fi;
 }
 
@@ -134,25 +160,21 @@ do
 	checkIsWin="$( checkWinningConditions )"
 	if [[ $checkIsWin == "win" ]]
 	then
-		echo "You Win"
+		echo You Win
 		break
 	elif [[ $count -eq 9 ]]
 	then
 		break
 	fi;
 	systemPlay
-	count=$(( $count+1 ))
-	checkWin="$( checkWinningConditions )"
-	if [[ $checkWin == "win" ]]
+	count=$(( $count+1 ));
+	checkWin=$( checkWinningConditions )
+	if [[ $checkWin == win ]]
 	then
-		echo "system win"
+		echo system win
 		break
-   elif [[ $count -eq 9 ]]
-   then
+  	elif [[ $count -eq 9 ]]
+  	then
       break
    fi;
 done
-
-
-
-
