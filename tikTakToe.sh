@@ -1,7 +1,7 @@
 #!/bin/bash -x
 echo "Welcome To TicTakToe"
 declare -a array
-
+count=0;
 for (( count=0; count<9; count++ ))
 do
 	array[$count]=$count
@@ -42,3 +42,65 @@ then
 fi;
 }
 displayBoard
+
+function checkIsEmpty()
+{
+argument=$1
+	if [[ ${array[$argument]} != "$userLetter" ]]
+	then
+		echo "true"
+	else
+		echo "false"
+}
+
+function checkElementHorizontally()
+{
+	for(( row=0; row<${#array[@]}; row+=3 ))
+	do
+		if [[ ${array[$row]} = ${array[$row+1]} && ${array[$row]} = ${array[$row+2]} ]]
+		then
+			echo "win"
+		fi;
+	done
+}
+
+
+function checkElementVertically()
+{
+	for (( coloumn=0; coloumn<${#array[@]}; coloumn++ ))
+	do
+		if [[ ${array[$coloumn]} = ${array[$coloumn+3]} && ${array[$coloumn]} = ${array[$coloumn+5]} ]]
+		then
+			echo "win"
+		fi;
+	done
+}
+
+function checkElementInCross()
+{
+	if [[ ${array[0]} = ${array[4]} && ${array[0]} = ${array[8]} ]]
+	then
+		echo "win"
+	elif [[ ${array[2]} = ${array[4]} && ${array[2]} = ${array[6]} ]]
+	then
+		echo "win"
+	fi;
+}
+
+function userPlay()
+{
+	read -p "Enter the position:" position
+	checkPositionIsEmpty="$( checkIsEmpty $position )"
+	if [[ $checkPositionIsEmpty == "true" ]]
+	then
+		array[$position]="$userLetter"
+		checkHorizotal="$( checkElementHorizontally )"
+		if [[ $checkHorizotal == "win" ]]
+		then
+			break
+		fi;
+	fi;
+}
+
+
+
