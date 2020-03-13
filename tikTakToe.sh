@@ -30,4 +30,14 @@ fi;
 	echo "you can play with letter $userLetter"
 }
 
-
+function toss()
+{
+number=$(( RANDOM % 2 ))
+if [[ $number -eq 0 ]]
+then
+	echo "user play first"
+elif [[ $number -eq 1 ]]
+then
+	echo "system can play first"
+fi;
+}
