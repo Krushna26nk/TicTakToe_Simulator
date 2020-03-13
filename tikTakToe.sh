@@ -139,24 +139,68 @@ local possibleMoves=""
       fi;
    done
       echo $possibleMoves
+}
 
+function suggestPossibleCrossMoves()
+{
+local possibleMoves=""
+	if [[ ${array[0]} == ${array[4]} && ${array[0]} == "$systemLetter" ]]
+	then
+		possibleMoves=${array[8]}
+	elif [[ ${array[4]} == ${array[8]} && ${array[4]} == "$systemLetter" ]]
+	then
+		possibleMoves=${array[0]}
+   elif [[ ${array[0]} == ${array[8]} && ${array[0]} == "$systemLetter" ]]
+	then
+		possibleMoves=${array[4]}
+	elif [[ ${array[2]} == ${array[4]} && ${array[2]} == "$systemLetter" ]]
+	then
+		possibleMoves=${array[6]}
+	elif [[ ${array[4]} == ${array[6]} && ${array[4]} == "$systemLetter" ]]
+   then
+      possibleMoves=${array[2]}
+	elif [[ ${array[2]} == ${array[6]} && ${array[2]} == "$systemLetter" ]]
+   then
+      possibleMoves=${array[4]}
+	fi;
+	echo $possibleMoves
 }
 
 function systemPlay()
 {
 	horizotalMove="$( suggestPossibleHorizontalMoves )"
 	verticalMove="$( suggestPossibleVerticalMoves )"
+	crossMove="$( suggestPossibleCrossMoves )"
+	echo ccccc: $crossMove
 	if [[ $horizotalMove != "" ]]
 	then
+		emptyCheck="$( checkIsEmpty $horizotalMove)"
+		if [[ $emptyCheck == "true" ]]
+		then
 		array[$horizotalMove]="$systemLetter"
 		displayBoard
+		fi
 	elif [[ $verticalMove != "" ]]
 	then
+		isEmpty="$( checkIsEmpty $verticalMove )"
+		if [[ $isEmpty == "true" ]]
+		then
 		array[$verticalMove]="$systemLetter"
 		displayBoard
+		fi
+	elif [[ $crossMove != "" ]]
+	then
+		isPositionEmpty="$( checkIsEmpty $crossMove )"
+		echo empty:::: $isPositionEmpty
+		if [[ $isPositionEmpty == "true" ]]
+		then
+			array[$crossMove]="$systemLetter"
+			displayBoard
+		fi
 	else
 		numberPosition=$(( RANDOM % 9 ))
 		checkPositionIsEmpty="$( checkIsEmpty $numberPosition )"
+		echo systemPos::$numberPosition
 		if [[ $checkPositionIsEmpty == "true" ]]
 		then
 			array[$numberPosition]="$systemLetter"
