@@ -18,7 +18,6 @@ function displayBoard()
 
 function suggestLetter()
 {
-local userLetter="";
 value=$(( RANDOM % 2 ))
 if [[ $value -eq 0 ]]
 then
@@ -27,7 +26,7 @@ elif [[ $value -eq 1 ]]
 then
 	userLetter="O"
 fi;
-	echo "you can play with letter $userLetter"
+	echo $userLetter
 }
 
 function toss()
@@ -51,29 +50,33 @@ argument=$1
 		echo "true"
 	else
 		echo "false"
+	fi;
 }
 
 function checkElementHorizontally()
 {
+local result=""
 	for(( row=0; row<${#array[@]}; row+=3 ))
 	do
 		if [[ ${array[$row]} = ${array[$row+1]} && ${array[$row]} = ${array[$row+2]} ]]
 		then
-			echo "win"
+			result="win"
 		fi;
 	done
+	echo $result
 }
-
 
 function checkElementVertically()
 {
+local result=""
 	for (( coloumn=0; coloumn<${#array[@]}; coloumn++ ))
 	do
-		if [[ ${array[$coloumn]} = ${array[$coloumn+3]} && ${array[$coloumn]} = ${array[$coloumn+5]} ]]
+		if [[ ${array[$coloumn]} = ${array[$coloumn+3]} && ${array[$coloumn]} = ${array[$coloumn+6]} ]]
 		then
-			echo "win"
+			result="win"
 		fi;
 	done
+		echo $result
 }
 
 function checkElementInCross()
@@ -87,6 +90,7 @@ function checkElementInCross()
 	fi;
 }
 
+userLetter="$( suggestLetter )"
 function userPlay()
 {
 	read -p "Enter the position:" position
@@ -94,13 +98,30 @@ function userPlay()
 	if [[ $checkPositionIsEmpty == "true" ]]
 	then
 		array[$position]="$userLetter"
-		checkHorizotal="$( checkElementHorizontally )"
-		if [[ $checkHorizotal == "win" ]]
-		then
-			break
-		fi;
+		displayBoard
+	else
+		((count--))
 	fi;
 }
+
+for (( playCount=0; playCount<9; playCount++ ))
+do
+	userPlay
+	count=$(( $count+1 ))
+	checkHorizontal="$( checkElementHorizontally )"
+	checkVertical="$(  checkElementVertically )"
+	echo VVV: $checkVertical
+	checkCross="$(  checkElementInCross )"
+	if [[ $checkHorizontal == "win" || $checkVertical == "win" || $checkCross == "win" ]]
+	then
+		echo "You Win"
+		break
+	elif [[ $count -eq 9 ]]
+	then
+		break
+	fi;
+done
+
 
 
 
