@@ -16,4 +16,18 @@ function displayBoard()
 	done
 }
 
+function suggestLetter()
+{
+local userLetter="";
+value=$(( RANDOM % 2 ))
+if [[ $value -eq 0 ]]
+then
+	userLetter="X"
+elif [[ $value -eq 1 ]]
+then
+	userLetter="O"
+fi;
+	echo "you can play with letter $userLetter"
+}
+
 
