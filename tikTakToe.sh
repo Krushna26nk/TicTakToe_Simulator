@@ -110,7 +110,6 @@ do
 	count=$(( $count+1 ))
 	checkHorizontal="$( checkElementHorizontally )"
 	checkVertical="$(  checkElementVertically )"
-	echo VVV: $checkVertical
 	checkCross="$(  checkElementInCross )"
 	if [[ $checkHorizontal == "win" || $checkVertical == "win" || $checkCross == "win" ]]
 	then
