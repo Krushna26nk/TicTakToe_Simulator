@@ -171,7 +171,6 @@ function systemPlay()
 	horizotalMove="$( suggestPossibleHorizontalMoves )"
 	verticalMove="$( suggestPossibleVerticalMoves )"
 	crossMove="$( suggestPossibleCrossMoves )"
-	echo ccccc: $crossMove
 	if [[ $horizotalMove != "" ]]
 	then
 		emptyCheck="$( checkIsEmpty $horizotalMove)"
@@ -191,7 +190,6 @@ function systemPlay()
 	elif [[ $crossMove != "" ]]
 	then
 		isPositionEmpty="$( checkIsEmpty $crossMove )"
-		echo empty:::: $isPositionEmpty
 		if [[ $isPositionEmpty == "true" ]]
 		then
 			array[$crossMove]="$systemLetter"
@@ -200,7 +198,6 @@ function systemPlay()
 	else
 		numberPosition=$(( RANDOM % 9 ))
 		checkPositionIsEmpty="$( checkIsEmpty $numberPosition )"
-		echo systemPos::$numberPosition
 		if [[ $checkPositionIsEmpty == "true" ]]
 		then
 			array[$numberPosition]="$systemLetter"
