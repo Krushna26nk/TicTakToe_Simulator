@@ -16,18 +16,16 @@ function displayBoard()
 	done
 }
 
-function suggestLetter()
-{
 value=$(( RANDOM % 2 ))
 if [[ $value -eq 0 ]]
 then
 	userLetter="X"
+	systemLetter="O"
 elif [[ $value -eq 1 ]]
 then
 	userLetter="O"
+	systemLetter="X"
 fi;
-	echo $userLetter
-}
 
 function toss()
 {
@@ -40,12 +38,13 @@ then
 	echo "system can play first"
 fi;
 }
+
 displayBoard
 
 function checkIsEmpty()
 {
 argument=$1
-	if [[ ${array[$argument]} != "$userLetter" ]]
+	if [[ ${array[$argument]} != "$userLetter" && ${array[$argument]} != "$systemLetter" ]]
 	then
 		echo "true"
 	else
@@ -90,7 +89,6 @@ function checkElementInCross()
 	fi;
 }
 
-userLetter="$( suggestLetter )"
 function userPlay()
 {
 	read -p "Enter the position:" position
@@ -104,14 +102,37 @@ function userPlay()
 	fi;
 }
 
-for (( playCount=0; playCount<9; playCount++ ))
-do
-	userPlay
-	count=$(( $count+1 ))
+function systemPlay()
+{
+	numberPosition=$(( RANDOM % 9 ))
+	checkPositionIsEmpty="$( checkIsEmpty $numberPosition )"
+	if [[ $checkPositionIsEmpty == "true" ]]
+	then
+		array[$numberPosition]="$systemLetter"
+		displayBoard
+	else
+		((count--))
+		echo "position is already filled,U can play"
+	fi;
+}
+
+function checkWinningConditions()
+{
 	checkHorizontal="$( checkElementHorizontally )"
 	checkVertical="$(  checkElementVertically )"
 	checkCross="$(  checkElementInCross )"
 	if [[ $checkHorizontal == "win" || $checkVertical == "win" || $checkCross == "win" ]]
+   then
+		echo "win"
+	fi;
+}
+
+for (( playCount=0; playCount<9; playCount++ ))
+do
+	userPlay
+	count=$(( $count+1 ))
+	checkIsWin="$( checkWinningConditions )"
+	if [[ $checkIsWin == "win" ]]
 	then
 		echo "You Win"
 		break
@@ -119,6 +140,17 @@ do
 	then
 		break
 	fi;
+	systemPlay
+	count=$(( $count+1 ))
+	checkWin="$( checkWinningConditions )"
+	if [[ $checkWin == "win" ]]
+	then
+		echo "system win"
+		break
+   elif [[ $count -eq 9 ]]
+   then
+      break
+   fi;
 done
 
 
