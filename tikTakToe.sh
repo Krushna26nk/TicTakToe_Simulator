@@ -2,6 +2,7 @@
 echo "Welcome To TicTakToe"
 declare -a array
 count=0;
+
 for (( count=0; count<9; count++ ))
 do
 	array[$count]=$count
@@ -121,12 +122,37 @@ local possibleMoves=""
 		echo $possibleMoves
 }
 
+function suggestPossibleVerticalMoves()
+{
+local possibleMoves=""
+   for (( j=0; j<3; j++ ))
+   do
+      if [[ ${array[$j]} == ${array[$i+3]} && ${array[$j]} == "$systemLetter" ]]
+      then
+         possibleMoves=${array[$j+6]}
+      elif [[ ${array[$j]} == ${array[$j+6]} && ${array[$j]} == "$systemLetter" ]]
+      then
+         possibleMoves=${array[$j+3]}
+      elif [[ ${array[$j+3]} == ${array[$j+6]} &&  ${array[$j+3]} == "$systemLetter" ]]
+      then
+         possibleMoves=${array[$j]}
+      fi;
+   done
+      echo $possibleMoves
+
+}
+
 function systemPlay()
 {
-	possibleMove="$( suggestPossibleHorizontalMoves )"
-	if [[ $possibleMove != "" ]]
+	horizotalMove="$( suggestPossibleHorizontalMoves )"
+	verticalMove="$( suggestPossibleVerticalMoves )"
+	if [[ $horizotalMove != "" ]]
 	then
-		array[$possibleMove]="$systemLetter"
+		array[$horizotalMove]="$systemLetter"
+		displayBoard
+	elif [[ $verticalMove != "" ]]
+	then
+		array[$verticalMove]="$systemLetter"
 		displayBoard
 	else
 		numberPosition=$(( RANDOM % 9 ))
@@ -136,8 +162,8 @@ function systemPlay()
 			array[$numberPosition]="$systemLetter"
 			displayBoard
 		else
-			((count--))
-			echo "position is already filled,U can play"
+			count=$(($count-1))
+			echo "position is already filled U can play"
 		fi;
 	fi;
 }
