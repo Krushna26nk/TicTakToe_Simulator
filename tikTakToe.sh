@@ -108,13 +108,13 @@ function suggestPossibleHorizontalMoves()
 local possibleMoves=""
 	for (( i=0; i<${#array[@]}; i+=3 ))
 	do
-		if [[ ${array[$i]} == ${array[$i+1]} && ${array[$i]} == "$systemLetter" ]]
+		if [[ ${array[$i]} == ${array[$i+1]} && ${array[$i]} == "$systemLetter" ||  ${array[$i]} == ${array[$i+1]} && ${array[$i]} == "$userLetter"  ]]
 		then
 			possibleMoves=${array[$i+2]}
-		elif [[ ${array[$i]} == ${array[$i+2]} && ${array[$i]} == "$systemLetter" ]]
+		elif [[ ${array[$i]} == ${array[$i+2]} && ${array[$i]} == "$systemLetter" ||  ${array[$i]} == ${array[$i+2]} && ${array[$i]} == "$userLetter" ]]
 		then
 			possibleMoves=${array[$i+1]}
-		elif [[ ${array[$i+1]} == ${array[$i+2]} &&  ${array[$i+1]} == "$systemLetter" ]]
+		elif [[ ${array[$i+1]} == ${array[$i+2]} &&  ${array[$i+1]} == "$systemLetter" ||  ${array[$i+1]} == ${array[$i+2]} &&  ${array[$i+1]} == "$userLetter"  ]]
 		then
 			possibleMoves=${array[$i]}
 		fi;
@@ -127,13 +127,13 @@ function suggestPossibleVerticalMoves()
 local possibleMoves=""
    for (( j=0; j<3; j++ ))
    do
-      if [[ ${array[$j]} == ${array[$i+3]} && ${array[$j]} == "$systemLetter" ]]
+      if [[ ${array[$j]} == ${array[$i+3]} && ${array[$j]} == "$systemLetter" ||  ${array[$j]} == ${array[$i+3]} && ${array[$j]} == "$userLetter" ]]
       then
          possibleMoves=${array[$j+6]}
-      elif [[ ${array[$j]} == ${array[$j+6]} && ${array[$j]} == "$systemLetter" ]]
+      elif [[ ${array[$j]} == ${array[$j+6]} && ${array[$j]} == "$systemLetter" || ${array[$j]} == ${array[$j+6]} && ${array[$j]} == "$userLetter"  ]]
       then
          possibleMoves=${array[$j+3]}
-      elif [[ ${array[$j+3]} == ${array[$j+6]} &&  ${array[$j+3]} == "$systemLetter" ]]
+      elif [[ ${array[$j+3]} == ${array[$j+6]} &&  ${array[$j+3]} == "$systemLetter" || ${array[$j+3]} == ${array[$j+6]} &&  ${array[$j+3]} == "$userLetter" ]]
       then
          possibleMoves=${array[$j]}
       fi;
