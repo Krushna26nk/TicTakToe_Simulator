@@ -144,7 +144,7 @@ local possibleMoves=""
 function suggestPossibleCrossMoves()
 {
 local possibleMoves=""
-	if [[ ${array[0]} == ${array[4]} && ${array[0]} == "$systemLetter" ]]
+	if [[ ${array[0]} == ${array[4]} && ${array[0]} == "$systemLetter"  ]]
 	then
 		possibleMoves=${array[8]}
 	elif [[ ${array[4]} == ${array[8]} && ${array[4]} == "$systemLetter" ]]
@@ -166,11 +166,37 @@ local possibleMoves=""
 	echo $possibleMoves
 }
 
+function blockElementInCross()
+{
+local possibleMoves=""
+	if [[ ${array[0]} == ${array[4]} && ${array[0]} == "$userLetter" ]]
+	then
+		possibleMoves=${array[8]}
+	elif [[  ${array[4]} == ${array[8]} && ${array[4]} == "$userLetter" ]]
+	then
+		possibleMoves=${array[0]}
+	elif [[ ${array[0]} == ${array[8]} && ${array[0]} == "$userLetter" ]]
+	then
+		possibleMoves=${array[4]}
+	elif [[ ${array[2]} == ${array[4]} && ${array[2]} == "$userLetter" ]]
+	then
+		possibleMoves=${array[6]}
+	elif [[ ${array[4]} == ${array[6]} && ${array[4]} == "$userLetter" ]]
+	then
+		possibleMoves=${array[2]}
+	elif [[ ${array[2]} == ${array[6]} && ${array[2]} == "$userLetter" ]]
+	then
+		possibleMoves=${array[4]}
+	fi;
+		echo $possibleMoves
+}
+
 function systemPlay()
 {
 	horizotalMove="$( suggestPossibleHorizontalMoves )"
 	verticalMove="$( suggestPossibleVerticalMoves )"
 	crossMove="$( suggestPossibleCrossMoves )"
+	blockCrossElement="$( blockElementInCross )"
 	if [[ $horizotalMove != "" ]]
 	then
 		emptyCheck="$( checkIsEmpty $horizotalMove)"
@@ -195,6 +221,14 @@ function systemPlay()
 			array[$crossMove]="$systemLetter"
 			displayBoard
 		fi
+	elif [[ $blockCrossElement != "" ]]
+	then
+		isEmpty="$( checkIsEmpty $c )"
+		if [[ $blockCrossElement == "true" ]]
+		then
+			array[$blockCrossElement]="$systemLetter"
+			displayBoard
+		fi;
 	else
 		numberPosition=$(( RANDOM % 9 ))
 		checkPositionIsEmpty="$( checkIsEmpty $numberPosition )"
