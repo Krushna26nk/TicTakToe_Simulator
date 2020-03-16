@@ -81,7 +81,7 @@ local result=""
 
 function checkElementInCross()
 {
-	if [[ ${array[0]} = ${array[4]} && ${array[0]} = ${array[8]} ]]
+	if [[  ${array[0]} = ${array[4]} && ${array[0]} = ${array[8]} ]]
 	then
 		echo "win"
 	elif [[ ${array[2]} = ${array[4]} && ${array[2]} = ${array[6]} ]]
@@ -108,13 +108,13 @@ function suggestPossibleHorizontalMoves()
 local possibleMoves=""
 	for (( i=0; i<${#array[@]}; i+=3 ))
 	do
-		if [[ ${array[$i]} == ${array[$i+1]} && ${array[$i]} == "$systemLetter" ||  ${array[$i]} == ${array[$i+1]} && ${array[$i]} == "$userLetter"  ]]
+		if [[ ( ${array[$i]} == ${array[$i+1]} && ${array[$i]} == "$systemLetter" ) || ( ${array[$i]} == ${array[$i+1]} && ${array[$i]} == "$userLetter" ) ]]
 		then
 			possibleMoves=${array[$i+2]}
-		elif [[ ${array[$i]} == ${array[$i+2]} && ${array[$i]} == "$systemLetter" ||  ${array[$i]} == ${array[$i+2]} && ${array[$i]} == "$userLetter" ]]
+		elif [[ ( ${array[$i]} == ${array[$i+2]} && ${array[$i]}  == "$systemLetter" ) || ( ${array[$i]} == ${array[$i+2]} && ${array[$i]} == "$userLetter" ) ]]
 		then
 			possibleMoves=${array[$i+1]}
-		elif [[ ${array[$i+1]} == ${array[$i+2]} &&  ${array[$i+1]} == "$systemLetter" ||  ${array[$i+1]} == ${array[$i+2]} &&  ${array[$i+1]} == "$userLetter"  ]]
+		elif [[ ( ${array[$i+1]} == ${array[$i+2]} &&  ${array[$i+1]}  == "$systemLetter" ) || ( ${array[$i+1]} == ${array[$i+2]} &&  ${array[$i+1]} == "$userLetter" ) ]]
 		then
 			possibleMoves=${array[$i]}
 		fi;
@@ -127,13 +127,13 @@ function suggestPossibleVerticalMoves()
 local possibleMoves=""
    for (( j=0; j<3; j++ ))
    do
-      if [[ ${array[$j]} == ${array[$i+3]} && ${array[$j]} == "$systemLetter" ||  ${array[$j]} == ${array[$i+3]} && ${array[$j]} == "$userLetter" ]]
+      if [[  ( ${array[$j]} == ${array[$j+3]} && ${array[$j]} == "$systemLetter" )  ||  ( ${array[$j]} == ${array[$j+3]} && ${array[$j]} == "$userLetter" )  ]]
       then
          possibleMoves=${array[$j+6]}
-      elif [[ ${array[$j]} == ${array[$j+6]} && ${array[$j]} == "$systemLetter" || ${array[$j]} == ${array[$j+6]} && ${array[$j]} == "$userLetter"  ]]
+      elif [[ ( ${array[$j]} == ${array[$j+6]} && ${array[$j]} == "$systemLetter" ) || ( ${array[$j]} == ${array[$j+6]} && ${array[$j]} == "$userLetter" ) ]]
       then
          possibleMoves=${array[$j+3]}
-      elif [[ ${array[$j+3]} == ${array[$j+6]} &&  ${array[$j+3]} == "$systemLetter" || ${array[$j+3]} == ${array[$j+6]} &&  ${array[$j+3]} == "$userLetter" ]]
+      elif [[ ( ${array[$j+3]} == ${array[$j+6]} &&  ${array[$j+3]} == "$systemLetter" )  || ( ${array[$j+3]} == ${array[$j+6]} &&  ${array[$j+3]} == "$userLetter" ) ]]
       then
          possibleMoves=${array[$j]}
       fi;
@@ -191,12 +191,28 @@ local possibleMoves=""
 		echo $possibleMoves
 }
 
+function checkCornerAndCenter()
+{
+local possibleMove=""
+	for (( element=0; element<${#array[@]}; element+=2 ))
+	do
+				isPositionEmpty="$( checkIsEmpty $element )"
+				if [[ $isPositionEmpty == "true" ]]
+				then
+					possibleMove="$element"
+					break
+				fi;
+	done
+	echo $possibleMove
+}
+
 function systemPlay()
 {
 	horizotalMove="$( suggestPossibleHorizontalMoves )"
-	verticalMove="$( suggestPossibleVerticalMoves )"
+   verticalMove="$( suggestPossibleVerticalMoves )"
 	crossMove="$( suggestPossibleCrossMoves )"
 	blockCrossElement="$( blockElementInCross )"
+	selectCorner="$( checkCornerAndCenter )"
 	if [[ $horizotalMove != "" ]]
 	then
 		emptyCheck="$( checkIsEmpty $horizotalMove)"
@@ -223,10 +239,18 @@ function systemPlay()
 		fi
 	elif [[ $blockCrossElement != "" ]]
 	then
-		isEmpty="$( checkIsEmpty $c )"
-		if [[ $blockCrossElement == "true" ]]
+		isEmpty="$( checkIsEmpty $blockCrossElement )"
+		if [[ $isEmpty == "true" ]]
 		then
 			array[$blockCrossElement]="$systemLetter"
+			displayBoard
+		fi;
+	elif  [[ $selectCorner != "" ]]
+	then
+		isEmpty="$( checkIsEmpty $selectCorner )"
+		if [[ $isEmpty == "true" ]]
+		then
+			array[$selectCorner]="$systemLetter"
 			displayBoard
 		fi;
 	else
@@ -238,7 +262,7 @@ function systemPlay()
 			displayBoard
 		else
 			count=$(($count-1))
-			echo "position is already filled U can play"
+			echo "OOPS! position is already filled, U can play"
 		fi;
 	fi;
 }
