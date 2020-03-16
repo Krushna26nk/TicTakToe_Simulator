@@ -1,7 +1,7 @@
 #!/bin/bash -x
 echo "Welcome To TicTakToe"
 declare -a array
-count=0;
+playCount=0;
 
 for (( count=0; count<9; count++ ))
 do
@@ -99,7 +99,7 @@ function userPlay()
 		array[$position]="$userLetter"
 		displayBoard
 	else
-		((count--))
+		((playCount--))
 	fi;
 }
 
@@ -119,7 +119,16 @@ local possibleMoves=""
 			possibleMoves=${array[$i]}
 		fi;
 	done
-		echo $possibleMoves
+		if [[ $possibleMoves != "" ]]
+		then
+			emptyCheck="$( checkIsEmpty $possibleMoves )"
+			if [[ $emptyCheck == "true" ]]
+			then
+				echo $possibleMoves
+			fi;
+		else
+			suggestPossibleVerticalMoves
+		fi;
 }
 
 function suggestPossibleVerticalMoves()
@@ -138,7 +147,11 @@ local possibleMoves=""
          possibleMoves=${array[$j]}
       fi;
    done
+		checkPositionEmpty="$( checkIsEmpty $possibleMoves )"
+		if [[ $checkPositionEmpty == "true" ]]
+		then
       echo $possibleMoves
+		fi;
 }
 
 function suggestPossibleCrossMoves()
@@ -163,7 +176,16 @@ local possibleMoves=""
    then
       possibleMoves=${array[4]}
 	fi;
-	echo $possibleMoves
+		if [[ $possibleMoves != "" ]]
+		then
+		checkEmpty="$( checkIsEmpty $possibleMoves )"
+			if [[ $checkEmpty == "true" ]]
+			then
+				echo $possibleMoves
+			fi;
+		else
+			blockElementInCross
+		fi;
 }
 
 function blockElementInCross()
@@ -188,7 +210,16 @@ local possibleMoves=""
 	then
 		possibleMoves=${array[4]}
 	fi;
-		echo $possibleMoves
+		if [[ $possibleMoves != "" ]]
+      then
+      checkEmpty="$( checkIsEmpty $possibleMoves )"
+         if [[ $checkEmpty == "true" ]]
+         then
+            echo $possibleMoves
+         fi;
+		else
+			checkCornerAndCenter
+		fi;
 }
 
 function checkCornerAndCenter()
@@ -196,74 +227,50 @@ function checkCornerAndCenter()
 local possibleMove=""
 	for (( element=0; element<${#array[@]}; element+=2 ))
 	do
-				isPositionEmpty="$( checkIsEmpty $element )"
-				if [[ $isPositionEmpty == "true" ]]
-				then
-					possibleMove="$element"
-					break
-				fi;
+		isPositionEmpty="$( checkIsEmpty $element )"
+			if [[ $isPositionEmpty == "true" ]]
+			then
+				possibleMove="$element"
+				break
+			fi;
 	done
-	echo $possibleMove
+		if [[ $possibleMove != "" ]]
+		then
+		echo $possibleMove
+		else
+			suggestPossibleSidesMoves
+		fi;
+}
+
+function suggestPossibleSidesMoves()
+{
+local sideMove=""
+	for (( side=1; side<=${#array[@]}; side+=2 ))
+	do
+		checkEmpty="$( checkIsEmpty $side )"
+		if [[ $checkEmpty == "true" ]]
+		then
+			sideMove="$side"
+			break
+		fi
+	done
+		echo $sideMove
 }
 
 function systemPlay()
 {
 	horizotalMove="$( suggestPossibleHorizontalMoves )"
-   verticalMove="$( suggestPossibleVerticalMoves )"
 	crossMove="$( suggestPossibleCrossMoves )"
-	blockCrossElement="$( blockElementInCross )"
-	selectCorner="$( checkCornerAndCenter )"
 	if [[ $horizotalMove != "" ]]
 	then
-		emptyCheck="$( checkIsEmpty $horizotalMove)"
-		if [[ $emptyCheck == "true" ]]
-		then
 		array[$horizotalMove]="$systemLetter"
 		displayBoard
-		fi
-	elif [[ $verticalMove != "" ]]
-	then
-		isEmpty="$( checkIsEmpty $verticalMove )"
-		if [[ $isEmpty == "true" ]]
-		then
-		array[$verticalMove]="$systemLetter"
-		displayBoard
-		fi
 	elif [[ $crossMove != "" ]]
 	then
-		isPositionEmpty="$( checkIsEmpty $crossMove )"
-		if [[ $isPositionEmpty == "true" ]]
-		then
 			array[$crossMove]="$systemLetter"
 			displayBoard
-		fi
-	elif [[ $blockCrossElement != "" ]]
-	then
-		isEmpty="$( checkIsEmpty $blockCrossElement )"
-		if [[ $isEmpty == "true" ]]
-		then
-			array[$blockCrossElement]="$systemLetter"
-			displayBoard
-		fi;
-	elif  [[ $selectCorner != "" ]]
-	then
-		isEmpty="$( checkIsEmpty $selectCorner )"
-		if [[ $isEmpty == "true" ]]
-		then
-			array[$selectCorner]="$systemLetter"
-			displayBoard
-		fi;
 	else
-		numberPosition=$(( RANDOM % 9 ))
-		checkPositionIsEmpty="$( checkIsEmpty $numberPosition )"
-		if [[ $checkPositionIsEmpty == "true" ]]
-		then
-			array[$numberPosition]="$systemLetter"
-			displayBoard
-		else
-			count=$(($count-1))
-			echo "OOPS! position is already filled, U can play"
-		fi;
+			playCount=$(($playCount-1))
 	fi;
 }
 
@@ -278,28 +285,22 @@ function checkWinningConditions()
 	fi;
 }
 
-for (( playCount=0; playCount<9; playCount++ ))
+while [[ playCount -le 9 ]]
 do
 	userPlay
-	count=$(( $count+1 ))
+	playCount=$(( $playCount+1 ))
 	checkIsWin="$( checkWinningConditions )"
 	if [[ $checkIsWin == "win" ]]
 	then
 		echo You Win
 		break
-	elif [[ $count -eq 9 ]]
-	then
-		break
 	fi;
 	systemPlay
-	count=$(( $count+1 ));
+	playCount=$(( $playCount+1 ));
 	checkWin=$( checkWinningConditions )
 	if [[ $checkWin == win ]]
 	then
 		echo system win
 		break
-  	elif [[ $count -eq 9 ]]
-  	then
-      break
    fi;
 done
